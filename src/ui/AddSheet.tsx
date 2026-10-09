@@ -52,7 +52,7 @@ export default function AddSheet({ catalog, onAdd, onClose }: AddSheetProps) {
   };
 
   const onEnter = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
       e.preventDefault();
       submit(name);
     }

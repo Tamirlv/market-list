@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import type { CatalogEntry, Item } from '../types';
+import type { CatalogEntry, DeptId, Item } from '../types';
 import type { AuthUser } from '../auth/useAuth';
 import type { ShoppingActions } from '../app/useShoppingData';
-import type { DeptId } from '../types';
 import ListTab from './ListTab';
 import ItemRow from './ItemRow';
 import SwipeRow from './SwipeRow';

@@ -24,7 +24,7 @@ const SIGN_IN_FAILED = 'ההתחברות נכשלה, נסו שוב';
 
 function toAuthUser(u: User): AuthUser {
   const email = u.email ?? '';
-  return { uid: u.uid, email, firstName: u.displayName?.split(' ')[0] ?? email };
+  return { uid: u.uid, email, firstName: u.displayName?.split(' ')[0] || email };
 }
 
 export function useAuth(): AuthState {
@@ -45,7 +45,7 @@ export function useAuth(): AuthState {
     signInWithRedirect(auth, new GoogleAuthProvider()).catch(() => setError(SIGN_IN_FAILED));
   }, []);
   const signOut = useCallback(() => {
-    void fbSignOut(auth);
+    fbSignOut(auth).catch(() => {});
   }, []);
 
   if (!resolved) return { status: 'loading', user: null, error, signIn, signOut };
