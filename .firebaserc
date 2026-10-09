@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "demo-shopping-list"
+    "default": "demo-shopping-list",
+    "prod": "market-list-3a1c8"
   }
 }

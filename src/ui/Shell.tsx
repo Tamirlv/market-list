@@ -11,6 +11,7 @@ import UndoToast from './UndoToast';
 import AddSheet from './AddSheet';
 import FavoritesTab from './FavoritesTab';
 import RecentTab from './RecentTab';
+import OfflineBanner from './OfflineBanner';
 import { relativeTime } from './relativeTime';
 import './shell.css';
 
@@ -44,7 +45,23 @@ function latest(items: Item[]): Item | null {
   return best;
 }
 
+function useOnline(): boolean {
+  const [online, setOnline] = useState(() => navigator.onLine);
+  useEffect(() => {
+    const on = () => setOnline(true);
+    const off = () => setOnline(false);
+    window.addEventListener('online', on);
+    window.addEventListener('offline', off);
+    return () => {
+      window.removeEventListener('online', on);
+      window.removeEventListener('offline', off);
+    };
+  }, []);
+  return online;
+}
+
 export default function Shell({ items, catalog, actions, error, onDismissError }: ShellProps) {
+  const online = useOnline();
   const [tab, setTab] = useState<Tab>('list');
   const [addOpen, setAddOpen] = useState(false);
   const [undoKey, setUndoKey] = useState<number | null>(null);
@@ -98,6 +115,7 @@ export default function Shell({ items, catalog, actions, error, onDismissError }
         <h1>הרשימה שלנו</h1>
         <p className="status-line">{status}</p>
       </header>
+      <OfflineBanner online={online} />
       <main className="shell-main">
         {tab === 'list' && <ListTab items={items} onToggle={actions.toggle} onFinish={actions.finish} renderRow={renderRow} />}
         {tab === 'favorites' && <FavoritesTab catalog={catalog} activeKeys={activeKeys} onAdd={actions.add} onSetFavorite={actions.setFavorite} />}
