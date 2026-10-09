@@ -2,7 +2,12 @@ import { useEffect, useState } from 'react';
 import type { CatalogEntry, Item } from '../types';
 import type { AuthUser } from '../auth/useAuth';
 import type { ShoppingActions } from '../app/useShoppingData';
+import type { DeptId } from '../types';
 import ListTab from './ListTab';
+import ItemRow from './ItemRow';
+import SwipeRow from './SwipeRow';
+import DeptPicker from './DeptPicker';
+import UndoToast from './UndoToast';
 import { relativeTime } from './relativeTime';
 import './shell.css';
 
@@ -36,15 +41,46 @@ function latest(items: Item[]): Item | null {
   return best;
 }
 
-export default function Shell({ items, actions, error, onDismissError }: ShellProps) {
+export default function Shell({ items, catalog, actions, error, onDismissError }: ShellProps) {
   const [tab, setTab] = useState<Tab>('list');
   const [, setAddOpen] = useState(false); // the add sheet is rendered by Task 9
+  const [undoKey, setUndoKey] = useState<number | null>(null);
+  const [deptItem, setDeptItem] = useState<Item | null>(null);
 
   useEffect(() => {
     if (!error) return;
     const t = setTimeout(onDismissError, 4000);
     return () => clearTimeout(t);
   }, [error, onDismissError]);
+
+  const renderRow = (item: Item) => {
+    const isFav = catalog.some((c) => c.key === item.key && c.isFavorite);
+    return (
+      <SwipeRow
+        key={item.id}
+        actions={[
+          {
+            label: 'מחק',
+            icon: '🗑',
+            onAction: () => {
+              actions.remove(item);
+              setUndoKey(Date.now());
+            },
+          },
+          { label: 'העבר מחלקה', icon: '📂', onAction: () => setDeptItem(item) },
+          isFav
+            ? { label: 'הסר ממועדפים', icon: '☆', onAction: () => actions.setFavorite(item.key, item.name, false) }
+            : { label: 'מועדף', icon: '⭐', onAction: () => actions.setFavorite(item.key, item.name, true) },
+        ]}
+      >
+        <ItemRow as="div" item={item} onToggle={actions.toggle} />
+      </SwipeRow>
+    );
+  };
+  const pickDept = (dept: DeptId) => {
+    if (deptItem) actions.setDept(deptItem, dept);
+    setDeptItem(null);
+  };
 
   const last = latest(items);
   const status = last
@@ -58,11 +94,23 @@ export default function Shell({ items, actions, error, onDismissError }: ShellPr
         <p className="status-line">{status}</p>
       </header>
       <main className="shell-main">
-        {tab === 'list' && <ListTab items={items} onToggle={actions.toggle} onFinish={actions.finish} />}
+        {tab === 'list' && <ListTab items={items} onToggle={actions.toggle} onFinish={actions.finish} renderRow={renderRow} />}
         {tab === 'favorites' && <p className="empty-hint">המועדפים יופיעו כאן</p>}
         {tab === 'recent' && <p className="empty-hint">הקניות האחרונות יופיעו כאן</p>}
       </main>
       <button type="button" className="fab" aria-label="הוספת פריט" onClick={() => setAddOpen(true)}>+</button>
+      {deptItem && <DeptPicker current={deptItem.dept} onPick={pickDept} onClose={() => setDeptItem(null)} />}
+      {undoKey !== null && (
+        <UndoToast
+          key={undoKey}
+          message="נמחק · בטל"
+          onUndo={() => {
+            actions.undoRemove();
+            setUndoKey(null);
+          }}
+          onExpire={() => setUndoKey(null)}
+        />
+      )}
       {error && <div role="alert" className="toast">{error}</div>}
       <nav className="tab-bar" aria-label="ניווט">
         {TABS.map((t) => (
