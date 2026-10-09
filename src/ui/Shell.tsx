@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { CatalogEntry, Item } from '../types';
 import type { AuthUser } from '../auth/useAuth';
 import type { ShoppingActions } from '../app/useShoppingData';
@@ -9,6 +9,8 @@ import SwipeRow from './SwipeRow';
 import DeptPicker from './DeptPicker';
 import UndoToast from './UndoToast';
 import AddSheet from './AddSheet';
+import FavoritesTab from './FavoritesTab';
+import RecentTab from './RecentTab';
 import { relativeTime } from './relativeTime';
 import './shell.css';
 
@@ -47,6 +49,8 @@ export default function Shell({ items, catalog, actions, error, onDismissError }
   const [addOpen, setAddOpen] = useState(false);
   const [undoKey, setUndoKey] = useState<number | null>(null);
   const [deptItem, setDeptItem] = useState<Item | null>(null);
+
+  const activeKeys = useMemo(() => new Set(items.filter((i) => !i.inCart).map((i) => i.key)), [items]);
 
   useEffect(() => {
     if (!error) return;
@@ -96,8 +100,8 @@ export default function Shell({ items, catalog, actions, error, onDismissError }
       </header>
       <main className="shell-main">
         {tab === 'list' && <ListTab items={items} onToggle={actions.toggle} onFinish={actions.finish} renderRow={renderRow} />}
-        {tab === 'favorites' && <p className="empty-hint">המועדפים יופיעו כאן</p>}
-        {tab === 'recent' && <p className="empty-hint">הקניות האחרונות יופיעו כאן</p>}
+        {tab === 'favorites' && <FavoritesTab catalog={catalog} activeKeys={activeKeys} onAdd={actions.add} onSetFavorite={actions.setFavorite} />}
+        {tab === 'recent' && <RecentTab catalog={catalog} activeKeys={activeKeys} onAdd={actions.add} onSetFavorite={actions.setFavorite} />}
       </main>
       <button type="button" className="fab" aria-label="הוספת פריט" onClick={() => setAddOpen(true)}>+</button>
       {addOpen && <AddSheet catalog={catalog} onAdd={actions.add} onClose={() => setAddOpen(false)} />}

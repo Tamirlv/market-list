@@ -49,3 +49,8 @@
 .suggestions { list-style: none; margin: 8px 0 0; padding: 0; }
 .suggestion { width: 100%; min-height: var(--tap-min); text-align: start; background: none; border: 0; border-radius: 12px; padding: 0 12px; font: inherit; color: var(--text); cursor: pointer; }
 .suggestion.add-typed { color: var(--accent); font-weight: 600; }
+.catalog-row { display: flex; align-items: center; }
+.catalog-row .item-btn { flex: 1; min-width: 0; }
+.row-marker { font-size: .8rem; color: var(--accent); white-space: nowrap; }
+.row-marker.added { font-weight: 600; }
+.star-btn { min-width: var(--tap-min); min-height: var(--tap-min); border: 0; background: none; font-size: 1.3rem; cursor: pointer; }
