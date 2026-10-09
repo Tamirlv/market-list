@@ -5,6 +5,9 @@ import App from '../../src/app/App';
 import { useAuth } from '../../src/auth/useAuth';
 
 vi.mock('../../src/auth/useAuth', () => ({ useAuth: vi.fn() }));
+vi.mock('../../src/app/useShoppingData', () => ({
+  useShoppingData: () => ({ items: [], catalog: [], actions: {}, error: null, clearError: vi.fn() }),
+}));
 
 const signIn = vi.fn();
 const signOut = vi.fn();
