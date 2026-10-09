@@ -23,6 +23,7 @@ export interface ShoppingData {
 }
 
 const ERROR_MESSAGE = 'משהו השתבש, נסו שוב';
+const LISTENER_ERROR_MESSAGE = 'אין חיבור לרשימה — נסו לרענן את האפליקציה';
 
 export function useShoppingData(user: AuthUser): ShoppingData {
   const [items, setItems] = useState<Item[]>([]);
@@ -36,8 +37,9 @@ export function useShoppingData(user: AuthUser): ShoppingData {
   const by = user.firstName;
 
   useEffect(() => {
-    const u1 = repo.subscribeItems(setItems);
-    const u2 = repo.subscribeCatalog(setCatalog);
+    const onError = () => setError(LISTENER_ERROR_MESSAGE);
+    const u1 = repo.subscribeItems(setItems, onError);
+    const u2 = repo.subscribeCatalog(setCatalog, onError);
     return () => {
       u1();
       u2();

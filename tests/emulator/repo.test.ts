@@ -1,6 +1,6 @@
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { collection, getDocsFromServer } from 'firebase/firestore';
-import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithCredential, signOut } from 'firebase/auth';
 import { auth, db } from '../../src/data/firebase';
 import {
   addItem,
@@ -139,5 +139,55 @@ describe('repo', () => {
     await restoreItem(item);
     const [back] = await readItems();
     expect(back).toEqual(item);
+  });
+
+  it('adds a name containing a slash as one item and one catalog entry', async () => {
+    await add('נייר טואלט/מגבות');
+    const items = await readItems();
+    expect(items).toHaveLength(1);
+    expect(items[0].name).toBe('נייר טואלט/מגבות');
+    expect(await readCatalog()).toHaveLength(1);
+  });
+
+  it('ignores a name with nothing to add instead of throwing', async () => {
+    await add('/');
+    expect(await readItems()).toHaveLength(0);
+    expect(await readCatalog()).toHaveLength(0);
+  });
+
+  it('handles names that normalize to reserved doc ids', async () => {
+    await add('..');
+    expect(await readItems()).toHaveLength(1);
+    const catalog = await readCatalog();
+    expect(catalog).toHaveLength(1);
+    expect(catalog[0].key).toBe('..');
+  });
+
+  it('recovers when the item to update was deleted on the server', async () => {
+    await add('חלב', 1);
+    const stale = await readItems();
+    await removeItem(stale[0].id);
+    await addItem(stale, await readCatalog(), { name: 'חלב', qty: 2, note: 'x' }, BY);
+    const items = await readItems();
+    expect(items).toHaveLength(1);
+    expect(items[0].id).toBe(stale[0].id);
+    expect(items[0].qty).toBe(3);
+  });
+
+  it('reports listener failures through onError', async () => {
+    await signOut(auth);
+    try {
+      const err = await new Promise<Error>((resolve) => {
+        subscribeItems(() => {}, resolve);
+      });
+      expect(err).toBeInstanceOf(Error);
+    } finally {
+      await signInWithCredential(
+        auth,
+        GoogleAuthProvider.credential(
+          JSON.stringify({ sub: 'test-tamir', email: 'tamirlevi22@gmail.com', email_verified: true }),
+        ),
+      );
+    }
   });
 });

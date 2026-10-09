@@ -19,7 +19,18 @@ import type { AddInput, CatalogEntry, DeptId, Item } from '../types';
 const itemsCol = () => collection(db, 'households', 'main', 'items');
 const catalogCol = () => collection(db, 'households', 'main', 'catalog');
 const itemDoc = (id: string) => doc(db, 'households', 'main', 'items', id);
-const catalogDoc = (key: string) => doc(db, 'households', 'main', 'catalog', key);
+
+// Catalog keys are normalized names. Ids Firestore rejects (empty, '.', '..', leading '~',
+// reserved '__*') get a '~' prefix + percent-encoding; every other key is
+// used as-is so existing data stays valid.
+export function catalogDocId(key: string): string {
+  const invalid = key === '' || key === '.' || key === '..' || key.startsWith('__') || key.startsWith('~');
+  return invalid ? '~' + encodeURIComponent(key) : key;
+}
+function catalogKeyOf(id: string): string {
+  return id.startsWith('~') ? decodeURIComponent(id.slice(1)) : id;
+}
+const catalogDoc = (key: string) => doc(db, 'households', 'main', 'catalog', catalogDocId(key));
 
 function ms(v: unknown): number | null {
   return v instanceof Timestamp ? v.toMillis() : null;
@@ -48,7 +59,7 @@ function toItem(snap: DocumentSnapshot): Item {
 function toCatalogEntry(snap: DocumentSnapshot): CatalogEntry {
   const d = readData(snap);
   return {
-    key: snap.id,
+    key: catalogKeyOf(snap.id),
     name: d.name,
     dept: d.dept ?? null,
     isFavorite: d.isFavorite === true,
@@ -56,12 +67,15 @@ function toCatalogEntry(snap: DocumentSnapshot): CatalogEntry {
   };
 }
 
-export function subscribeItems(cb: (items: Item[]) => void): () => void {
-  return onSnapshot(itemsCol(), (snap) => cb(snap.docs.map(toItem)));
+export function subscribeItems(cb: (items: Item[]) => void, onError?: (e: Error) => void): () => void {
+  return onSnapshot(itemsCol(), (snap) => cb(snap.docs.map(toItem)), (e) => onError?.(e));
 }
 
-export function subscribeCatalog(cb: (entries: CatalogEntry[]) => void): () => void {
-  return onSnapshot(catalogCol(), (snap) => cb(snap.docs.map(toCatalogEntry)));
+export function subscribeCatalog(
+  cb: (entries: CatalogEntry[]) => void,
+  onError?: (e: Error) => void,
+): () => void {
+  return onSnapshot(catalogCol(), (snap) => cb(snap.docs.map(toCatalogEntry)), (e) => onError?.(e));
 }
 
 export async function addItem(
@@ -71,19 +85,30 @@ export async function addItem(
   by: string,
 ): Promise<void> {
   const clean = clampInput(input);
+  if (normalizeName(clean.name) === '') return;
   const plan = planAdd(items, clean, learnedDept(catalog, clean.name));
   const batch = writeBatch(db);
 
   if (plan.kind === 'update') {
-    batch.update(itemDoc(plan.id), {
-      qty: plan.qty,
-      note: plan.note,
-      inCart: false,
-      updatedAt: serverTimestamp(),
-      updatedBy: by,
-    });
-    const key = items.find((i) => i.id === plan.id)!.key;
-    batch.set(catalogDoc(key), { name: clean.name }, { merge: true });
+    // set+merge (not update) so it is last-write-wins if the other phone
+    // already deleted this item; it then simply gets re-created.
+    const existing = items.find((i) => i.id === plan.id)!;
+    batch.set(
+      itemDoc(plan.id),
+      {
+        name: existing.name,
+        key: existing.key,
+        qty: plan.qty,
+        note: plan.note,
+        dept: existing.dept,
+        inCart: false,
+        createdAt: existing.createdAt === null ? serverTimestamp() : Timestamp.fromMillis(existing.createdAt),
+        updatedAt: serverTimestamp(),
+        updatedBy: by,
+      },
+      { merge: true },
+    );
+    batch.set(catalogDoc(existing.key), { name: clean.name }, { merge: true });
   } else {
     batch.set(doc(itemsCol()), {
       name: clean.name,
