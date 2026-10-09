@@ -27,4 +27,10 @@ describe('normalizeName', () => {
     expect(normalizeName('Coca Cola')).toBe('coca cola');
     expect(normalizeName("קוטג'")).toBe(normalizeName('קוטג׳'));
   });
+  it('never keeps slashes (they would split a Firestore doc path)', () => {
+    expect(normalizeName('חלב 1/2')).toBe('חלב 1 2');
+    expect(normalizeName('נייר טואלט/מגבות')).toBe(normalizeName('נייר טואלט מגבות'));
+    expect(normalizeName('a\\b')).toBe('a b');
+    expect(normalizeName('/')).toBe('');
+  });
 });

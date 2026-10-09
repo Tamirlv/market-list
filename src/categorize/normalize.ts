@@ -16,6 +16,7 @@ export function normalizeName(name: string): string {
     .replace(/[֑-ׇ]/g, '')
     .replace(/[׳’‘`]/g, "'")
     .toLowerCase()
+    .replace(/[/\\]/g, ' ')
     .split(/\s+/)
     .filter(Boolean)
     .map(normalizeWord)
