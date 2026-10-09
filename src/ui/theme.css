@@ -1,0 +1,32 @@
+:root {
+  --bg-from: #fdf1f3;
+  --bg-to: #f6efff;
+  --text: #3b2f45;
+  --text-secondary: #a593b3;
+  --accent: #b07aa1;
+  --card: rgba(255, 255, 255, 0.85);
+  --card-radius: 18px;
+  --qty-bg: #f7e3ee;
+  --fab-from: #f3a6c0;
+  --fab-to: #b99bf0;
+  --tap-min: 44px;
+  --safe-top: env(safe-area-inset-top);
+  --safe-right: env(safe-area-inset-right);
+  --safe-bottom: env(safe-area-inset-bottom);
+  --safe-left: env(safe-area-inset-left);
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root { min-height: 100%; }
+
+body {
+  margin: 0;
+  font-family: 'Rubik', system-ui, sans-serif;
+  color: var(--text);
+  background: linear-gradient(160deg, var(--bg-from), var(--bg-to)) fixed;
+  padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
+  -webkit-tap-highlight-color: transparent;
+}
+
+button { font: inherit; color: inherit; min-height: var(--tap-min); min-width: var(--tap-min); }
