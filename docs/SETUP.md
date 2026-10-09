@@ -2,6 +2,13 @@
 
 הפרויקט ב-Firebase (`market-list-3a1c8`), ב-GitHub (`Tamirlv/market-list`) וב-Vercel (`market-list`) כבר קיימים. נשארו רק הצעדים הבאים.
 
+## בדיקה מקדימה (הכול כבר בוצע)
+- ✓ ספק ההתחברות Google מופעל ב-Firebase Authentication.
+- ✓ מסד Firestore קיים (מצב production).
+- ✓ Public-facing name הוגדר.
+
+צעדים פתוחים: פריסת החוקים (1), הרשאות OAuth ב-Google Cloud (3), התקנה באייפון (5).
+
 ## 1. פריסת חוקי האבטחה של Firestore
 מתוך תיקיית הפרויקט:
 
@@ -24,10 +31,13 @@ npx firebase deploy --only firestore:rules --project prod
 4. ב-Authorized redirect URIs הוסיפו: `https://market-list-silk.vercel.app/__/auth/handler`
 5. לחצו Save.
 
-## 4. התקנה באייפון
+## 4. דומיין מורשה ב-Firebase Auth (חובה — כבר בוצע ✓)
+ב-Firebase Console → Authentication → Settings → Authorized domains הוסיפו את `market-list-silk.vercel.app`. בלי זה ההתחברות מהאתר נחסמת.
+
+## 5. התקנה באייפון
 פתחו את הכתובת ב-**Safari** → כפתור השיתוף → **"הוסף למסך הבית"**.
 
-## 5. פיתוח מקומי
+## 6. פיתוח מקומי
 - `npm run dev` — שרת פיתוח
 - `npm test` — בדיקות יחידה
 - `npm run test:emulator` — בדיקות מול אמולטור Firebase (דורש Java)
@@ -35,5 +45,5 @@ npx firebase deploy --only firestore:rules --project prod
 
 ## פתרון תקלות
 אם ההתחברות באייפון נכשלת:
-- בדקו ב-Firebase Console → Authentication → Settings → Authorized domains שהדומיין `market-list-silk.vercel.app` ברשימה.
+- ודאו שהדומיין `market-list-silk.vercel.app` ברשימת Authorized domains (צעד 4).
 - בדקו שהכתובת `https://market-list-silk.vercel.app/__/auth/handler` נטענת (לא מחזירה 404 ולא את דף האפליקציה).
