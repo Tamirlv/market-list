@@ -83,7 +83,7 @@ export async function addItem(
       updatedBy: by,
     });
     const key = items.find((i) => i.id === plan.id)!.key;
-    batch.set(catalogDoc(key), catalogFields(catalog, key, clean.name), { merge: true });
+    batch.set(catalogDoc(key), { name: clean.name }, { merge: true });
   } else {
     batch.set(doc(itemsCol()), {
       name: clean.name,
@@ -96,7 +96,7 @@ export async function addItem(
       updatedAt: serverTimestamp(),
       updatedBy: by,
     });
-    batch.set(catalogDoc(plan.key), catalogFields(catalog, plan.key, clean.name), { merge: true });
+    batch.set(catalogDoc(plan.key), { name: clean.name }, { merge: true });
   }
   await batch.commit();
 }
@@ -104,11 +104,6 @@ export async function addItem(
 function learnedDept(catalog: CatalogEntry[], name: string): DeptId | null {
   const key = normalizeName(name);
   return catalog.find((c) => c.key === key)?.dept ?? null;
-}
-
-function catalogFields(catalog: CatalogEntry[], key: string, name: string): DocumentData {
-  if (catalog.some((c) => c.key === key)) return { name };
-  return { name, isFavorite: false, dept: null, lastBoughtAt: null };
 }
 
 export async function toggleCart(id: string, inCart: boolean, by: string): Promise<void> {

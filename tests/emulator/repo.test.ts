@@ -80,6 +80,25 @@ describe('repo', () => {
     await add('חלב');
     const [after] = await readCatalog();
     expect(after.isFavorite).toBe(true);
+    expect(after.dept).toBeNull();
+    expect(after.lastBoughtAt).toBeNull();
+  });
+
+  it('does not clobber catalog fields when addItem gets a stale empty catalog', async () => {
+    await add('חלב');
+    const [item] = await readItems();
+    await setFavorite(item.key, item.name, true);
+    await setDept(item, 'frozen', BY);
+    await finishShopping([item]);
+    const [before] = await readCatalog();
+    expect(before.isFavorite).toBe(true);
+    expect(before.dept).toBe('frozen');
+    expect(typeof before.lastBoughtAt).toBe('number');
+
+    await addItem(await readItems(), [], { name: 'חלב', qty: 1, note: '' }, BY);
+
+    const [after] = await readCatalog();
+    expect(after).toEqual(before);
   });
 
   it('learns a department chosen with setDept', async () => {
