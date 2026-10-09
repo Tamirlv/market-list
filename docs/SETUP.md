@@ -16,10 +16,18 @@ npx firebase deploy --only firestore:rules --project prod
 - אין צורך במשתני סביבה: הגדרות ה-Firebase הציבוריות נמצאות בקובץ `.env.production` שנשמר ב-git.
 - הכתובת: https://market-list-silk.vercel.app
 
-## 3. התקנה באייפון
+## 3. הרשאות OAuth ב-Google Cloud (חובה)
+בלי זה ההתחברות באייפון תיכשל עם `redirect_uri_mismatch`.
+1. פתחו: https://console.cloud.google.com/apis/credentials?project=market-list-3a1c8
+2. תחת OAuth 2.0 Client IDs פתחו את הלקוח **"Web client (auto created by Google Service)"**.
+3. ב-Authorized JavaScript origins הוסיפו: `https://market-list-silk.vercel.app`
+4. ב-Authorized redirect URIs הוסיפו: `https://market-list-silk.vercel.app/__/auth/handler`
+5. לחצו Save.
+
+## 4. התקנה באייפון
 פתחו את הכתובת ב-**Safari** → כפתור השיתוף → **"הוסף למסך הבית"**.
 
-## 4. פיתוח מקומי
+## 5. פיתוח מקומי
 - `npm run dev` — שרת פיתוח
 - `npm test` — בדיקות יחידה
 - `npm run test:emulator` — בדיקות מול אמולטור Firebase (דורש Java)
