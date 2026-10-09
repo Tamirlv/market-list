@@ -1,6 +1,7 @@
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { collection, getDocsFromServer } from 'firebase/firestore';
-import { db } from '../../src/data/firebase';
+import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+import { auth, db } from '../../src/data/firebase';
 import {
   addItem,
   finishShopping,
@@ -16,7 +17,14 @@ import type { CatalogEntry, Item } from '../../src/types';
 const BY = 'a@example.com';
 
 beforeAll(async () => {
-  // Task 5: sign in to the Auth emulator here.
+  // The real rules require an allowed, verified Google account; the Auth
+  // emulator accepts an unsigned JSON id token as a fake Google credential.
+  await signInWithCredential(
+    auth,
+    GoogleAuthProvider.credential(
+      JSON.stringify({ sub: 'test-tamir', email: 'tamirlevi22@gmail.com', email_verified: true }),
+    ),
+  );
 });
 
 beforeEach(async () => {

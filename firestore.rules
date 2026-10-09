@@ -1,9 +1,34 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Temporary allow-all for emulator development; replaced in Task 5.
-    match /{document=**} {
-      allow read, write: if true;
+    function allowed() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email.lower() in [
+          'tamirlevi22@gmail.com',
+          'edenvilf@gmail.com'
+        ];
+    }
+
+    function validItem() {
+      let d = request.resource.data;
+      return d.name is string
+        && d.name.trim().size() >= 1
+        && d.name.trim().size() <= 60
+        && d.note is string
+        && d.note.size() <= 120
+        && d.qty is int
+        && d.qty >= 1;
+    }
+
+    match /households/main {
+      match /items/{itemId} {
+        allow read, delete: if allowed();
+        allow create, update: if allowed() && validItem();
+      }
+      match /catalog/{key} {
+        allow read, write: if allowed();
+      }
     }
   }
 }
