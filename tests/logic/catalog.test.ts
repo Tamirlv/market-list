@@ -46,10 +46,37 @@ describe('suggestionsFor', () => {
     entry('גזר'),
   ];
   it('puts favorites first, then recency, with contains matching', () => {
-    expect(suggestionsFor(cat, 'חל').map((e) => e.name)).toEqual(['חלב', 'חלה', 'שוקולד חלב']);
+    expect(suggestionsFor(cat, 'חל').slice(0, 3).map((e) => e.name)).toEqual(['חלב', 'חלה', 'שוקולד חלב']);
   });
   it('returns [] for blank query and respects limit', () => {
     expect(suggestionsFor(cat, '  ')).toEqual([]);
     expect(suggestionsFor(cat, 'חל', 1)).toHaveLength(1);
+  });
+});
+
+describe('suggestionsFor with built-in basics', () => {
+  it('suggests basic products from an empty catalog', () => {
+    const r = suggestionsFor([], 'עגב');
+    expect(r.map((e) => e.name)).toContain('עגבניות');
+    const q = normalizeName('עגב');
+    expect(r.every((e) => e.key.includes(q))).toBe(true);
+    expect(r[0]).toMatchObject({ dept: 'produce', isFavorite: false, lastBoughtAt: null });
+  });
+  it('puts catalog matches before basics', () => {
+    const r = suggestionsFor([entry('עגבניות שרי מיוחדות', { lastBoughtAt: 5 })], 'עגב');
+    expect(r[0].name).toBe('עגבניות שרי מיוחדות');
+    expect(r.length).toBeGreaterThan(1);
+  });
+  it('does not duplicate a basic already in the catalog', () => {
+    const r = suggestionsFor([entry('עגבניות', { lastBoughtAt: 5 })], 'עגב');
+    expect(r.filter((e) => e.key === normalizeName('עגבניות'))).toHaveLength(1);
+    expect(r[0].lastBoughtAt).toBe(5);
+  });
+  it('ranks starts-with before contains among basics and respects limit', () => {
+    const r = suggestionsFor([], 'חל', 3);
+    expect(r.length).toBeLessThanOrEqual(3);
+    const q = normalizeName('חל');
+    const firstContains = r.findIndex((e) => !e.key.startsWith(q));
+    if (firstContains >= 0) expect(r.slice(firstContains).every((e) => !e.key.startsWith(q))).toBe(true);
   });
 });

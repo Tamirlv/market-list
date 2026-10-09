@@ -95,3 +95,12 @@ describe('AddSheet', () => {
     expect(onClose).toHaveBeenCalledTimes(3);
   });
 });
+
+describe('AddSheet built-in basics', () => {
+  it('suggests a basic product from an empty catalog and adds it on click', async () => {
+    const { onAdd, input } = setup([]);
+    await userEvent.type(input, 'עגב');
+    await userEvent.click(screen.getByRole('button', { name: /^עגבניות$/ }));
+    expect(onAdd).toHaveBeenCalledWith({ name: 'עגבניות', qty: 1, note: '' });
+  });
+});
