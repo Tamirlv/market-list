@@ -33,3 +33,19 @@
 .dept-options { list-style: none; margin: 0; padding: 0; }
 .dept-option { width: 100%; text-align: start; background: none; border: 0; padding: 10px 12px; border-radius: 12px; cursor: pointer; }
 .dept-option.current { background: var(--qty-bg); font-weight: 600; }
+.add-sheet { max-height: 85dvh; }
+.sheet-handle { display: flex; justify-content: center; padding: 6px 0 12px; touch-action: none; cursor: grab; }
+.sheet-handle span { width: 40px; height: 5px; border-radius: 3px; background: var(--text-secondary); opacity: .5; }
+.add-row { display: flex; align-items: center; gap: 8px; }
+.add-input { flex: 1; min-width: 0; min-height: var(--tap-min); padding: 0 14px; font: inherit; font-size: 16px; color: var(--text); border: 1.5px solid var(--qty-bg); border-radius: 14px; background: #fff; }
+.note-input { width: 100%; margin-top: 8px; box-sizing: border-box; }
+.stepper { display: flex; align-items: center; gap: 4px; }
+.stepper button, .note-toggle { min-width: var(--tap-min); min-height: var(--tap-min); border: 0; border-radius: 50%; background: var(--qty-bg); color: var(--accent); font-size: 1.3rem; cursor: pointer; }
+.note-toggle[aria-pressed='true'] { outline: 2px solid var(--accent); }
+.stepper span { min-width: 1.5em; text-align: center; font-weight: 600; }
+.chip-heading { margin: 14px 0 6px; font-size: .9rem; color: var(--accent); }
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { min-height: var(--tap-min); padding: 0 14px; border: 0; border-radius: 999px; background: var(--qty-bg); color: var(--text); font: inherit; cursor: pointer; }
+.suggestions { list-style: none; margin: 8px 0 0; padding: 0; }
+.suggestion { width: 100%; min-height: var(--tap-min); text-align: start; background: none; border: 0; border-radius: 12px; padding: 0 12px; font: inherit; color: var(--text); cursor: pointer; }
+.suggestion.add-typed { color: var(--accent); font-weight: 600; }

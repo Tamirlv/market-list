@@ -8,6 +8,7 @@ import ItemRow from './ItemRow';
 import SwipeRow from './SwipeRow';
 import DeptPicker from './DeptPicker';
 import UndoToast from './UndoToast';
+import AddSheet from './AddSheet';
 import { relativeTime } from './relativeTime';
 import './shell.css';
 
@@ -43,7 +44,7 @@ function latest(items: Item[]): Item | null {
 
 export default function Shell({ items, catalog, actions, error, onDismissError }: ShellProps) {
   const [tab, setTab] = useState<Tab>('list');
-  const [, setAddOpen] = useState(false); // the add sheet is rendered by Task 9
+  const [addOpen, setAddOpen] = useState(false);
   const [undoKey, setUndoKey] = useState<number | null>(null);
   const [deptItem, setDeptItem] = useState<Item | null>(null);
 
@@ -99,6 +100,7 @@ export default function Shell({ items, catalog, actions, error, onDismissError }
         {tab === 'recent' && <p className="empty-hint">הקניות האחרונות יופיעו כאן</p>}
       </main>
       <button type="button" className="fab" aria-label="הוספת פריט" onClick={() => setAddOpen(true)}>+</button>
+      {addOpen && <AddSheet catalog={catalog} onAdd={actions.add} onClose={() => setAddOpen(false)} />}
       {deptItem && <DeptPicker current={deptItem.dept} onPick={pickDept} onClose={() => setDeptItem(null)} />}
       {undoKey !== null && (
         <UndoToast
