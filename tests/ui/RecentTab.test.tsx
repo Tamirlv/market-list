@@ -13,8 +13,9 @@ const cat: CatalogEntry[] = [
 const setup = (activeKeys = new Set<string>()) => {
   const onAdd = vi.fn();
   const onSetFavorite = vi.fn();
-  render(<RecentTab catalog={cat} activeKeys={activeKeys} onAdd={onAdd} onSetFavorite={onSetFavorite} />);
-  return { onAdd, onSetFavorite };
+  const onRemoveRecent = vi.fn();
+  render(<RecentTab catalog={cat} activeKeys={activeKeys} onAdd={onAdd} onSetFavorite={onSetFavorite} onRemoveRecent={onRemoveRecent} />);
+  return { onAdd, onSetFavorite, onRemoveRecent };
 };
 
 describe('RecentTab', () => {
@@ -43,13 +44,21 @@ describe('RecentTab', () => {
     expect(onAdd).not.toHaveBeenCalled();
   });
 
+  it('remove button calls onRemoveRecent without adding or favoriting', async () => {
+    const { onAdd, onSetFavorite, onRemoveRecent } = setup();
+    await userEvent.click(screen.getAllByRole('button', { name: 'הסר מאחרונים' })[0]);
+    expect(onRemoveRecent).toHaveBeenCalledWith('חלב');
+    expect(onAdd).not.toHaveBeenCalled();
+    expect(onSetFavorite).not.toHaveBeenCalled();
+  });
+
   it('marks rows already on the list', () => {
     setup(new Set(['לחם']));
     expect(screen.getAllByText('ברשימה ✓')).toHaveLength(1);
   });
 
   it('empty state', () => {
-    render(<RecentTab catalog={[]} activeKeys={new Set()} onAdd={vi.fn()} onSetFavorite={vi.fn()} />);
+    render(<RecentTab catalog={[]} activeKeys={new Set()} onAdd={vi.fn()} onSetFavorite={vi.fn()} onRemoveRecent={vi.fn()} />);
     expect(screen.getByText('עוד לא סיימתם קנייה')).toBeInTheDocument();
   });
 });

@@ -4,6 +4,7 @@ import { GoogleAuthProvider, signInWithCredential, signOut } from 'firebase/auth
 import { auth, db } from '../../src/data/firebase';
 import {
   addItem,
+  clearRecent,
   finishShopping,
   removeItem,
   restoreItem,
@@ -107,6 +108,22 @@ describe('repo', () => {
 
     const [after] = await readCatalog();
     expect(after).toEqual(before);
+  });
+
+  it('clearRecent resets lastBoughtAt only', async () => {
+    await add('חלב');
+    const [item] = await readItems();
+    await setFavorite(item.key, item.name, true);
+    await setDept(item, 'frozen', BY);
+    await finishShopping([item]);
+    const [before] = await readCatalog();
+    expect(typeof before.lastBoughtAt).toBe('number');
+    await clearRecent(item.key);
+    const [after] = await readCatalog();
+    expect(after.lastBoughtAt).toBeNull();
+    expect(after.isFavorite).toBe(true);
+    expect(after.dept).toBe('frozen');
+    expect(after.name).toBe(before.name);
   });
 
   it('learns a department chosen with setDept', async () => {

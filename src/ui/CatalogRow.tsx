@@ -14,9 +14,10 @@ interface Props {
   secondary?: string;
   onAdd(input: AddInput): void;
   onSetFavorite(key: string, name: string, fav: boolean): void;
+  onRemove?: () => void;
 }
 
-export default function CatalogRow({ entry, active, secondary, onAdd, onSetFavorite }: Props) {
+export default function CatalogRow({ entry, active, secondary, onAdd, onSetFavorite, onRemove }: Props) {
   const [justAdded, setJustAdded] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
@@ -48,6 +49,11 @@ export default function CatalogRow({ entry, active, secondary, onAdd, onSetFavor
       >
         {entry.isFavorite ? '⭐' : '☆'}
       </button>
+      {onRemove && (
+        <button type="button" className="remove-btn" aria-label="הסר מאחרונים" onClick={onRemove}>
+          ✕
+        </button>
+      )}
     </li>
   );
 }

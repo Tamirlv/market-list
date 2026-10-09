@@ -2,7 +2,13 @@ import { recentsOf } from '../logic/catalog';
 import CatalogRow, { type CatalogTabProps } from './CatalogRow';
 import { relativeTime } from './relativeTime';
 
-export default function RecentTab({ catalog, activeKeys, onAdd, onSetFavorite }: CatalogTabProps) {
+export default function RecentTab({
+  catalog,
+  activeKeys,
+  onAdd,
+  onSetFavorite,
+  onRemoveRecent,
+}: CatalogTabProps & { onRemoveRecent(key: string): void }) {
   const recents = recentsOf(catalog);
   if (recents.length === 0) return <p className="empty-hint">עוד לא סיימתם קנייה</p>;
   const now = Date.now();
@@ -16,6 +22,7 @@ export default function RecentTab({ catalog, activeKeys, onAdd, onSetFavorite }:
           secondary={relativeTime(e.lastBoughtAt, now)}
           onAdd={onAdd}
           onSetFavorite={onSetFavorite}
+          onRemove={() => onRemoveRecent(e.key)}
         />
       ))}
     </ul>

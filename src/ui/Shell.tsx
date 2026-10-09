@@ -118,7 +118,7 @@ export default function Shell({ items, catalog, actions, error, onDismissError }
       <main className="shell-main">
         {tab === 'list' && <ListTab items={items} onToggle={actions.toggle} onFinish={actions.finish} renderRow={renderRow} />}
         {tab === 'favorites' && <FavoritesTab catalog={catalog} activeKeys={activeKeys} onAdd={actions.add} onSetFavorite={actions.setFavorite} />}
-        {tab === 'recent' && <RecentTab catalog={catalog} activeKeys={activeKeys} onAdd={actions.add} onSetFavorite={actions.setFavorite} />}
+        {tab === 'recent' && <RecentTab catalog={catalog} activeKeys={activeKeys} onAdd={actions.add} onSetFavorite={actions.setFavorite} onRemoveRecent={actions.removeRecent} />}
       </main>
       <button type="button" className="fab" aria-label="הוספת פריט" onClick={() => setAddOpen(true)}>+</button>
       {addOpen && <AddSheet catalog={catalog} onAdd={actions.add} onClose={() => setAddOpen(false)} />}

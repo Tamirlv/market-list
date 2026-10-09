@@ -166,6 +166,10 @@ export async function setFavorite(key: string, name: string, isFavorite: boolean
   await setDoc(catalogDoc(key), { name, isFavorite }, { merge: true });
 }
 
+export async function clearRecent(key: string): Promise<void> {
+  await setDoc(catalogDoc(key), { lastBoughtAt: null }, { merge: true });
+}
+
 export async function setDept(item: Item, dept: DeptId, by: string): Promise<void> {
   const batch = writeBatch(db);
   batch.update(itemDoc(item.id), { dept, updatedAt: serverTimestamp(), updatedBy: by });

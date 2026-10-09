@@ -12,6 +12,7 @@ export interface ShoppingActions {
   finish(): void;
   setFavorite(key: string, name: string, fav: boolean): void;
   setDept(item: Item, dept: DeptId): void;
+  removeRecent(key: string): void;
 }
 
 export interface ShoppingData {
@@ -67,6 +68,7 @@ export function useShoppingData(user: AuthUser): ShoppingData {
       finish: () => run(repo.finishShopping(cartItems(itemsRef.current))),
       setFavorite: (key, name, fav) => run(repo.setFavorite(key, name, fav)),
       setDept: (item, dept) => run(repo.setDept(item, dept, by)),
+      removeRecent: (key) => run(repo.clearRecent(key)),
     }),
     [by, run],
   );

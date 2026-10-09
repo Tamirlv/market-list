@@ -54,4 +54,5 @@
 .row-marker { font-size: .8rem; color: var(--accent); white-space: nowrap; }
 .row-marker.added { font-weight: 600; }
 .star-btn { min-width: var(--tap-min); min-height: var(--tap-min); border: 0; background: none; font-size: 1.3rem; cursor: pointer; }
+.remove-btn { min-width: var(--tap-min); min-height: var(--tap-min); border: 0; background: none; color: var(--text-secondary); font-size: 1rem; cursor: pointer; }
 .offline-banner { margin: 0 0 12px; padding: 8px 12px; border-radius: var(--card-radius); background: #fff3cd; color: #6b5300; text-align: center; font-size: .9rem; }
