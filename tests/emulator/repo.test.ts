@@ -10,6 +10,7 @@ import {
   restoreItem,
   setDept,
   setFavorite,
+  updateItemDetails,
   subscribeCatalog,
   subscribeItems,
 } from '../../src/data/repo';
@@ -124,6 +125,18 @@ describe('repo', () => {
     expect(after.isFavorite).toBe(true);
     expect(after.dept).toBe('frozen');
     expect(after.name).toBe(before.name);
+  });
+
+  it('updateItemDetails persists qty and note; rules reject qty 0 and 121-char note', async () => {
+    await add('חלב');
+    const [item] = await readItems();
+    expect(item.qty).toBe(1);
+    await updateItemDetails(item.id, 4, 'קטנים', BY);
+    const [after] = await readItems();
+    expect(after.qty).toBe(4);
+    expect(after.note).toBe('קטנים');
+    await expect(updateItemDetails(item.id, 0, "", BY)).rejects.toThrow();
+    await expect(updateItemDetails(item.id, 2, 'x'.repeat(121), BY)).rejects.toThrow();
   });
 
   it('learns a department chosen with setDept', async () => {

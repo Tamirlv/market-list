@@ -176,3 +176,7 @@ export async function setDept(item: Item, dept: DeptId, by: string): Promise<voi
   batch.set(catalogDoc(item.key), { name: item.name, dept }, { merge: true });
   await batch.commit();
 }
+
+export async function updateItemDetails(id: string, qty: number, note: string, by: string): Promise<void> {
+  await updateDoc(itemDoc(id), { qty, note, updatedAt: serverTimestamp(), updatedBy: by });
+}

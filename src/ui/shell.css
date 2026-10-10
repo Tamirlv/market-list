@@ -5,12 +5,12 @@
 .dept-group { margin-bottom: 18px; }
 .dept-heading { font-size: 1rem; margin: 0 0 8px; color: var(--accent); }
 .item-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-.item-row { background: var(--card); border-radius: var(--card-radius); box-shadow: 0 2px 8px rgba(176, 122, 161, .12); }
-.item-btn { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; background: none; border: 0; text-align: start; cursor: pointer; min-height: 52px; }
+.item-row { display: flex; align-items: center; background: var(--card); border-radius: var(--card-radius); box-shadow: 0 2px 8px rgba(176, 122, 161, .12); }
+.item-btn { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; background: none; border: 0; text-align: start; cursor: pointer; min-height: 52px; }
 .item-main { display: flex; flex-direction: column; }
 .item-name { font-weight: 500; }
 .item-note { font-size: .8rem; color: var(--text-secondary); }
-.qty-badge { background: var(--qty-bg); color: var(--accent); border-radius: 999px; padding: 2px 10px; font-size: .85rem; font-weight: 500; }
+.qty-badge { background: var(--qty-bg); color: var(--accent); border: 0; border-radius: 999px; padding: 2px 10px; margin-inline-end: 8px; min-width: var(--tap-min); min-height: var(--tap-min); font: inherit; font-size: .85rem; font-weight: 500; cursor: pointer; }
 .item-row.in-cart .item-name { text-decoration: line-through; }
 .item-row.in-cart { opacity: .6; }
 .finish-btn { margin-top: 12px; width: 100%; border: 0; border-radius: var(--card-radius); color: #fff; font-weight: 500; background: linear-gradient(135deg, var(--fab-from), var(--fab-to)); }
@@ -56,3 +56,12 @@
 .star-btn { min-width: var(--tap-min); min-height: var(--tap-min); border: 0; background: none; font-size: 1.3rem; cursor: pointer; }
 .remove-btn { min-width: var(--tap-min); min-height: var(--tap-min); border: 0; background: none; color: var(--text-secondary); font-size: 1rem; cursor: pointer; }
 .offline-banner { margin: 0 0 12px; padding: 8px 12px; border-radius: var(--card-radius); background: #fff3cd; color: #6b5300; text-align: center; font-size: .9rem; }
+.qty-backdrop { position: fixed; inset: 0; background: rgba(59, 47, 69, .35); display: flex; align-items: center; justify-content: center; z-index: 20; padding: 16px; }
+.qty-dialog { width: 100%; max-width: 320px; background: #fff; border-radius: var(--card-radius); padding: 20px 16px 16px; text-align: center; }
+.qty-title { margin: 0 0 14px; font-size: 1.1rem; }
+.qty-stepper { justify-content: center; gap: 12px; }
+.qty-stepper span { font-size: 1.4rem; }
+.qty-actions { display: flex; gap: 8px; margin-top: 18px; }
+.qty-actions button { flex: 1; min-height: var(--tap-min); border: 0; border-radius: var(--card-radius); font: inherit; cursor: pointer; }
+.qty-save { color: #fff; font-weight: 500; background: linear-gradient(135deg, var(--fab-from), var(--fab-to)); }
+.qty-cancel { background: var(--qty-bg); color: var(--accent); }

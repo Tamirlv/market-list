@@ -12,6 +12,7 @@ export interface ShoppingActions {
   finish(): void;
   setFavorite(key: string, name: string, fav: boolean): void;
   setDept(item: Item, dept: DeptId): void;
+  editItem(item: Item, qty: number, note: string): void;
   removeRecent(key: string): void;
 }
 
@@ -68,6 +69,8 @@ export function useShoppingData(user: AuthUser): ShoppingData {
       finish: () => run(repo.finishShopping(cartItems(itemsRef.current))),
       setFavorite: (key, name, fav) => run(repo.setFavorite(key, name, fav)),
       setDept: (item, dept) => run(repo.setDept(item, dept, by)),
+      editItem: (item, qty, note) =>
+        run(repo.updateItemDetails(item.id, Math.max(1, Math.floor(qty) || 1), note.trim().slice(0, 120), by)),
       removeRecent: (key) => run(repo.clearRecent(key)),
     }),
     [by, run],

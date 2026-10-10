@@ -9,12 +9,13 @@ export interface ListTabProps {
   onToggle: (item: Item) => void;
   onFinish: () => void;
   renderRow?: (item: Item) => ReactNode;
+  onEditQty?: (item: Item) => void;
 }
 
-export default function ListTab({ items, onToggle, onFinish, renderRow }: ListTabProps) {
+export default function ListTab({ items, onToggle, onFinish, renderRow, onEditQty = () => {} }: ListTabProps) {
   const groups = groupByDept(items);
   const cart = cartItems(items);
-  const row = (i: Item) => (renderRow ? renderRow(i) : <ItemRow key={i.id} item={i} onToggle={onToggle} />);
+  const row = (i: Item) => (renderRow ? renderRow(i) : <ItemRow key={i.id} item={i} onToggle={onToggle} onEditQty={onEditQty} />);
 
   if (items.length === 0) {
     return <p className="empty-hint">הרשימה ריקה — לחצו + כדי להוסיף</p>;

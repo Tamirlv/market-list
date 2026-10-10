@@ -8,6 +8,7 @@ import SwipeRow from './SwipeRow';
 import DeptPicker from './DeptPicker';
 import UndoToast from './UndoToast';
 import AddSheet from './AddSheet';
+import EditItemDialog from './EditItemDialog';
 import FavoritesTab from './FavoritesTab';
 import RecentTab from './RecentTab';
 import OfflineBanner from './OfflineBanner';
@@ -65,6 +66,7 @@ export default function Shell({ items, catalog, actions, error, onDismissError }
   const [addOpen, setAddOpen] = useState(false);
   const [undoKey, setUndoKey] = useState<number | null>(null);
   const [deptItem, setDeptItem] = useState<Item | null>(null);
+  const [editItem, setEditItem] = useState<Item | null>(null);
 
   const activeKeys = useMemo(() => new Set(items.filter((i) => !i.inCart).map((i) => i.key)), [items]);
 
@@ -94,7 +96,7 @@ export default function Shell({ items, catalog, actions, error, onDismissError }
             : { label: 'מועדף', icon: '⭐', onAction: () => actions.setFavorite(item.key, item.name, true) },
         ]}
       >
-        <ItemRow as="div" item={item} onToggle={actions.toggle} />
+        <ItemRow as="div" item={item} onToggle={actions.toggle} onEditQty={setEditItem} />
       </SwipeRow>
     );
   };
@@ -123,6 +125,16 @@ export default function Shell({ items, catalog, actions, error, onDismissError }
       <button type="button" className="fab" aria-label="הוספת פריט" onClick={() => setAddOpen(true)}>+</button>
       {addOpen && <AddSheet catalog={catalog} onAdd={actions.add} onClose={() => setAddOpen(false)} />}
       {deptItem && <DeptPicker current={deptItem.dept} onPick={pickDept} onClose={() => setDeptItem(null)} />}
+      {editItem && (
+        <EditItemDialog
+          key={editItem.id}
+          name={editItem.name}
+          qty={editItem.qty}
+          note={editItem.note}
+          onSave={({ qty, note }) => actions.editItem(editItem, qty, note)}
+          onClose={() => setEditItem(null)}
+        />
+      )}
       {undoKey !== null && (
         <UndoToast
           key={undoKey}
